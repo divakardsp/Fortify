@@ -48,7 +48,7 @@ const sendVerificationEmail = async (
 
               <!-- Button -->
               <div style="text-align:center; margin:30px 0;">
-                <a href="http://localhost:${process.env.PORT}/api/auth/verify-email/${token}" 
+                <a href="http://localhost:${process.env.PORT}/api/users/verify-email/${token}" 
                    style="background:#4f46e5; color:#ffffff; text-decoration:none; padding:14px 24px; border-radius:6px; font-size:16px; display:inline-block;">
                   Verify Email
                 </a>
@@ -59,7 +59,7 @@ const sendVerificationEmail = async (
               </p>
 
               <p style="word-break:break-all; font-size:14px; color:#4f46e5;">
-                http://localhost:${process.env.PORT}/api/auth/verify-email/${token}
+                http://localhost:${process.env.PORT}/api/users/verify-email/${token}
               </p>
 
               <p style="font-size:14px; color:#999; margin-top:30px;">

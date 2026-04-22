@@ -2,7 +2,6 @@ import {
     pgTable,
     uuid,
     varchar,
-    boolean,
     timestamp,
 } from "drizzle-orm/pg-core";
 
@@ -18,8 +17,6 @@ export const clients = pgTable("clients", {
     redirectURL: varchar("redirect_url").notNull().unique(),
 
     clientSecret: varchar('client_secret', {length: 128}).unique(),
-    code: varchar({length: 10}),
-    codeExpires: timestamp("code_expires"),
 
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),

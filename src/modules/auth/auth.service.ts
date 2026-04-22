@@ -1,6 +1,6 @@
 import ApiError from "../../common/utils/apiError.js";
 import { db } from "../../db/index.js";
-import { users } from "../../db/schema.js";
+import { users } from "../../db/schema/users.js";
 import { eq } from "drizzle-orm";
 import {
     generateAccessToken,
@@ -236,29 +236,29 @@ export const renewAccessToken = async (refreshToken: string) => {
     }
 
     const newAccessToken = generateAccessToken({ id: user.id });
-    const newRefreshToken = generateRefreshToken({id: user.id})
-    const hashedNewRefreshToken = hashingTokens(newRefreshToken)
+    const newRefreshToken = generateRefreshToken({ id: user.id });
+    const hashedNewRefreshToken = hashingTokens(newRefreshToken);
     await db
         .update(users)
         .set({
             refreshToken: hashedNewRefreshToken,
-            refreshTokenExpires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+            refreshTokenExpires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         })
-        .where(eq(users.id, user.id))
+        .where(eq(users.id, user.id));
 
     return { newAccessToken, newRefreshToken };
 };
 
 export const logout = async (userId: string) => {
-    if(! userId) throw ApiError.badRequest("UserId is missing")
-    
+    if (!userId) throw ApiError.badRequest("UserId is missing");
+
     await db
         .update(users)
         .set({
             refreshToken: null,
             refreshTokenExpires: null,
         })
-        .where(eq(users.id, userId))
-    
-    return {message: "User logout successfully"}
-}
+        .where(eq(users.id, userId));
+
+    return { message: "User logout successfully" };
+};

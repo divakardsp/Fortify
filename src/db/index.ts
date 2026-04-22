@@ -1,4 +1,7 @@
-import {drizzle} from 'drizzle-orm/node-postgres';
-import * as schema from "./schema.js"
+import { drizzle } from "drizzle-orm/node-postgres";
+import * as clientSchema from "./schema/clients.js";
+import * as userSchema from "./schema/users.js";
 
-export const db = drizzle(process.env.DATABASE_URL!, {schema});
+const schema = { ...clientSchema, ...userSchema };
+
+export const db = drizzle(process.env.DATABASE_URL!, { schema });

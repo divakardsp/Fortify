@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express"
 import ApiError from "../../common/utils/apiError.js";
 import { verifyAccessToken } from "../../common/utils/jwt.js";
 import { db } from "../../db/index.js";
+import { users } from "../../db/schema/users.js";
 
 
 export const authenticate = async (req:Request, res: Response, next: NextFunction ) => {
