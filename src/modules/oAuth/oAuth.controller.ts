@@ -26,3 +26,10 @@ export const verifyCredentials = async (req: Request, res: Response) => {
     console.log(url)
     return ApiResponse.ok(res, `Redirecting to ${url}`, {code} )
 }
+
+export const getToken = async (req: Request, res: Response) => {
+    const {code, clientId, clientSecret} = req.body;
+    const result = await oAuthService.getToken(code, clientId, clientSecret);
+    return ApiResponse.ok(res, "Generated ID token", result)
+}
+

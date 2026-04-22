@@ -6,6 +6,7 @@ const router = Router();
 router.get("/", oAuthController.documentDiscovery)
 router.get("/auth/:clientId/:state", oAuthController.authorizing)
 router.post("/auth/code", oAuthController.verifyCredentials)
+router.get("/token", oAuthController.getToken)
 
 
 export default router

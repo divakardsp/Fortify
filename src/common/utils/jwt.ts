@@ -10,6 +10,16 @@ interface GenerateRandomTokensProps{
 interface PayloadJWTToken{
     id: string,
 }
+
+interface PayloadOAuthJWTToken{
+    sub: string,
+        name: string,
+        email: string,
+        email_verified: boolean,
+        iat: number,
+        iss: string,
+        aud: string
+}
 export const generateRandomTokens = () : GenerateRandomTokensProps => {
     const rawToken = crypto.randomBytes(32).toString('hex');
     const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
@@ -24,7 +34,7 @@ export const hashingTokens = (token: string) : string => {
     return crypto.createHash('sha256').update(token).digest('hex');
 }
 
-export const generateAccessToken = (payload: PayloadJWTToken) => {
+export const generateAccessToken = (payload: PayloadJWTToken | PayloadOAuthJWTToken  ) => {
     return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET!, {
         expiresIn: Number(process.env.ACCESS_TOKEN_EXPIRES_IN) || "15m",
     });

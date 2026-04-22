@@ -4,8 +4,12 @@ import { db } from "../../db/index.js";
 import { clients } from "../../db/schema/clients.js";
 import { users } from "../../db/schema/users.js";
 import { eq } from "drizzle-orm";
-import { passwordHashing } from "../../common/utils/jwt.js";
+import {
+    generateAccessToken,
+    passwordHashing,
+} from "../../common/utils/jwt.js";
 import { generateCode } from "../../common/utils/code.js";
+
 export const documentDiscovery = async () => {
     const ISSUER = `http://localhost:${process.env.PORT}`;
     const authorization_endpoint = `${ISSUER}/oauth/auth`;
@@ -63,7 +67,6 @@ export const authorizing = async (clientId: string, state: string) => {
 
     const ISSUER = `http://localhost:${process.env.PORT}`;
     const authCodeEndpoint = `${ISSUER}/oauth/auth/code?redirectUrl=${encodeURIComponent(client.redirectURL!)}`;
-    
 
     const html = `<!DOCTYPE html>
 <html lang="en">
@@ -627,4 +630,56 @@ export const verifyCredentials = async (email: string, passowrd: string) => {
         .where(eq(users.id, user.id));
 
     return code;
+};
+
+export const getToken = async (
+    code: string,
+    clientId: string,
+    clientSecret: string,
+) => {
+    if (!code) throw ApiError.badRequest("Code is Missing");
+    if (!clientId) throw ApiError.badRequest("ClientId is Missing");
+    if (!clientSecret) throw ApiError.badRequest("Client Secret is Missing");
+
+    const client = await db.query.clients.findFirst({
+        where: eq(clients.id, clientId),
+        columns: {
+            clientSecret: true,
+            name: true,
+            id: true,
+        },
+    });
+
+    if (!client) throw ApiError.notFound("Invalid ClientId or Secret");
+    if (clientSecret !== client.clientSecret)
+        throw ApiError.notFound("Invalid ClientId or Secret");
+
+    const user = await db.query.users.findFirst({
+        where: eq(users.code, code),
+    });
+
+    if (!user) throw ApiError.notFound("Invalid Code");
+    if (user.codeExpires) {
+        if (new Date(Date.now()) > user.codeExpires)
+            throw ApiError.unauthorized("Code is expired");
+    } else {
+        throw ApiError.unauthorized("Code is expired");
+    }
+
+    const idToken = generateAccessToken({
+        sub: user.id,
+        name: user.name,
+        email: user.email,
+        email_verified: user.isVerified,
+        iat: Math.floor(Date.now()/1000),
+        iss: process.env.ISSUER!,
+        aud: clientId
+    });
+
+    const accessToken =
+        "Token for Client to access user accounts in fortify (Will Implement it later)";
+    const refreshToken =
+        "Token for refreshing access token to access users accounts inside fortify (Will Implement it later)";
+
+    return { idToken, accessToken, refreshToken };
 };
