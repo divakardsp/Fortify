@@ -6,29 +6,20 @@ import {
     timestamp,
 } from "drizzle-orm/pg-core";
 
-export const users = pgTable("users", {
+export const clients = pgTable("clients", {
     id: uuid("id").primaryKey().defaultRandom(),
 
-    name: varchar({ length: 255 }).notNull(),
+    
+    name: varchar({ length: 255 }).notNull().unique(),
+    email: varchar({length: 322}).notNull().unique(),
 
-    email: varchar("email", { length: 322 }).notNull().unique(),
-    password: varchar("password"),
-    isVerified: boolean("is_verified").default(false).notNull(),
 
-    verificationToken: varchar("verification_token"),
-    verificationTokenExpires: timestamp("verification_token_expires", {
-        withTimezone: true,
-    }),
+    websiteURL: varchar('website_url').notNull().unique(),
+    redirectURL: varchar("redirect_url").notNull().unique(),
 
-    refreshToken: varchar("refresh_token"),
-    refreshTokenExpires: timestamp("refresh_token_expires", {
-        withTimezone: true,
-    }),
-
-    resetPasswordToken: varchar("reset_password_token"),
-    resetPasswordExpires: timestamp("reset_password_expires", {
-        withTimezone: true,
-    }),
+    clientSecret: varchar('client_secret', {length: 128}).unique(),
+    code: varchar({length: 10}),
+    codeExpires: timestamp("code_expires"),
 
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
