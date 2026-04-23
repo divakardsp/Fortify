@@ -6,9 +6,13 @@ import { users } from "../../db/schema/users.js";
 import { eq } from "drizzle-orm";
 import {
     generateAccessToken,
+    generateIDToken,
     passwordHashing,
+    verifyIDToken,
 } from "../../common/utils/jwt.js";
 import { generateCode } from "../../common/utils/code.js";
+import { PUBLIC_KEY } from "../../common/utils/certs.js";
+import jose from "node-jose"
 
 export const documentDiscovery = async () => {
     const ISSUER = `http://localhost:${process.env.PORT}`;
@@ -666,7 +670,7 @@ export const getToken = async (
         throw ApiError.unauthorized("Code is expired");
     }
 
-    const idToken = generateAccessToken({
+    const idToken = generateIDToken({
         sub: user.id,
         name: user.name,
         email: user.email,
@@ -683,3 +687,16 @@ export const getToken = async (
 
     return { idToken, accessToken, refreshToken };
 };
+
+export const getPublicKey = async () => {
+  const key = await jose.JWK.asKey(PUBLIC_KEY, "pem")
+  return { keys: [key.toJSON()]};
+}
+
+export const getUserInfo = async (token: string) => {
+  if(! token) throw ApiError.badRequest("IDToken is missing")
+  
+  const decodedToken = verifyIDToken(token);
+
+  return decodedToken;
+}

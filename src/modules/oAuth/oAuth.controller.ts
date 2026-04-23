@@ -33,3 +33,15 @@ export const getToken = async (req: Request, res: Response) => {
     return ApiResponse.ok(res, "Generated ID token", result)
 }
 
+export const getPublicKey = async (req: Request, res: Response) => {
+    const publicKey = await oAuthService.getPublicKey();
+    return ApiResponse.ok(res, "Sent Public Key", publicKey);
+}
+
+export const getUserInfo = async (req: Request, res: Response) => {
+    const {IDToken} = req.body;
+    const decodedToken = await oAuthService.getUserInfo(IDToken)
+    return ApiResponse.ok(res, "UserInfo sent", decodedToken);
+}
+
+
