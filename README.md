@@ -287,7 +287,6 @@ npm run keys           # Generate RSA key pair for JWT signing
 ## 🔒 Security Features
 
 - ✅ RSA-signed JWT tokens
-- ✅ Hashed passwords using SHA-256
 - ✅ Email verification tokens
 - ✅ Secure refresh token rotation
 - ✅ Authorization code expiration
@@ -344,48 +343,5 @@ curl -X POST http://localhost:5473/api/clients/register \
 ```
 
 Response includes `clientSecret` - store this securely!
-
-## 🚢 Production Deployment
-
-### Build for Production
-
-```bash
-npm run build
-```
-
-### Start Production Server
-
-```bash
-npm run start
-```
-
-### Pre-deployment Checklist
-
-- [ ] Update `.env` with production values
-- [ ] Use strong `ACCESS_TOKEN_SECRET` & `REFRESH_TOKEN_SECRET`
-- [ ] Configure email service properly
-- [ ] Set `NODE_ENV=production`
-- [ ] Use secure database URL
-- [ ] Enable HTTPS in production
-- [ ] Configure proper CORS settings
-- [ ] Set secure cookie options
-
-## 🤝 Contributing
-
-1. Create feature branch: `git checkout -b feature/your-feature`
-2. Make changes and test locally
-3. Commit: `git commit -am 'Add feature'`
-4. Push: `git push origin feature/your-feature`
-5. Open Pull Request
-
-## 📝 License
-
-ISC
-
-## 📞 Support
-
-For issues or questions, create an issue in the repository or contact the development team.
-
----
 
 **Built with ❤️ for secure authentication**
