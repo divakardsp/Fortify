@@ -2,7 +2,7 @@
 
 A complete, production-ready implementation of OpenID Connect (OIDC) and OAuth2 authorization server built with Express.js, TypeScript, and PostgreSQL. Fortify provides secure user authentication, client management, and token generation for third-party integrations.
 
-## 🎯 Features
+##  Features
 
 - **OAuth2 Authorization Code Flow** - Secure authorization code flow implementation
 - **OpenID Connect (OIDC)** - Complete OIDC specification compliance
@@ -16,7 +16,7 @@ A complete, production-ready implementation of OpenID Connect (OIDC) and OAuth2 
 - **Drizzle ORM** - Type-safe database operations with PostgreSQL
 - **Input Validation** - Joi schema validation for all API inputs
 
-## 📋 Tech Stack
+##  Tech Stack
 
 - **Runtime**: Node.js
 - **Language**: TypeScript
@@ -28,7 +28,7 @@ A complete, production-ready implementation of OpenID Connect (OIDC) and OAuth2 
 - **Validation**: Joi
 - **Build**: TypeScript Compiler (tsc)
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 
@@ -171,7 +171,7 @@ src/
 └── index.ts                     # Server entry point
 ```
 
-## 🔐 Database Schema
+##  Database Schema
 
 ### Users Table
 
@@ -204,7 +204,7 @@ src/
 - updatedAt (Timestamp)
 ```
 
-## 🔌 API Endpoints
+##  API Endpoints
 
 ### Authentication (`/api/users`)
 
@@ -239,7 +239,7 @@ src/
 | ------ | -------- | -------------------- |
 | GET    | `/`      | OpenID Configuration |
 
-## 🔑 OAuth2 Flow Example
+##  OAuth2 Flow Example
 
 ```
 1. Client redirects user to:
@@ -270,7 +270,7 @@ src/
    }
 ```
 
-## 📚 Available NPM Scripts
+##  Available NPM Scripts
 
 ```bash
 npm run start          # Production: Run compiled app
@@ -284,7 +284,7 @@ npm run studio         # Open Drizzle Studio (GUI)
 npm run keys           # Generate RSA key pair for JWT signing
 ```
 
-## 🔒 Security Features
+##  Security Features
 
 - ✅ RSA-signed JWT tokens
 - ✅ Email verification tokens
@@ -294,7 +294,7 @@ npm run keys           # Generate RSA key pair for JWT signing
 - ✅ Input validation on all endpoints
 - ✅ Unique client secrets per OAuth application
 
-## 🐛 Development Tips
+##  Development Tips
 
 ### View Database with Drizzle Studio
 
@@ -318,7 +318,7 @@ Changes to TypeScript files automatically recompile and restart server
 
 The compiled JavaScript is in `dist/` directory. You can inspect it for debugging or deployment.
 
-## 📧 Email Configuration
+##  Email Configuration
 
 For password reset and email verification emails to work:
 
@@ -329,7 +329,7 @@ For password reset and email verification emails to work:
     EMAIL_PASSWORD=your-app-password
     ```
 
-## 🧪 Example Client Registration
+##  Example Client Registration
 
 ```bash
 curl -X POST http://localhost:5473/api/clients/register \
