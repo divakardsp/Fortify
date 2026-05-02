@@ -8,9 +8,9 @@ import VerifyCredentialsOAuth from "./Dto/verifyCredentials.dto.js";
 const router = Router();
 
 router.get("/", oAuthController.documentDiscovery)
-router.get("/auth/:clientId/:state", oAuthController.authorizing)
+router.get("/auth/:clientId", oAuthController.authorizing)
 router.post("/auth/code",validate(VerifyCredentialsOAuth), oAuthController.verifyCredentials)
-router.get("/token",validate(TokenOAuthDto), oAuthController.getToken)
+router.post("/token",validate(TokenOAuthDto), oAuthController.getToken)
 router.get("/certs", oAuthController.getPublicKey)
 router.get("/user_info",validate(UserInfoOAuthDto), oAuthController.getUserInfo)
 

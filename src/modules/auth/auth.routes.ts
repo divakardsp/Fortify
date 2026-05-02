@@ -12,6 +12,7 @@ const router = Router();
 router.post("/register", validate(RegisterDto), authController.register)
 router.post("/verify-email/:token", authController.verifyUser);
 
+router.get("/reset-password-page/:token", authController.renderResetPasswordPage);
 router.post("/forgot-password", validate(ForgotPasswordDto), authController.forgotPassword)
 router.put("/reset-password/:resetToken", validate(ResetPasswordDto), authController.resetPassword);
 

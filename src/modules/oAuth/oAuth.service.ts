@@ -12,7 +12,7 @@ import {
 } from "../../common/utils/jwt.js";
 import { generateCode } from "../../common/utils/code.js";
 import { PUBLIC_KEY } from "../../common/utils/certs.js";
-import jose from "node-jose"
+import jose from "node-jose";
 
 export const documentDiscovery = async () => {
     const ISSUER = `http://localhost:${process.env.PORT}`;
@@ -52,10 +52,8 @@ export const documentDiscovery = async () => {
     };
 };
 
-export const authorizing = async (clientId: string, state: string) => {
+export const authorizing = async (clientId: string) => {
     if (!clientId) throw ApiError.badRequest("Missing clinetId");
-
-    if (!state) throw ApiError.badRequest("Missing state, makes this unsafe.");
 
     const client = await db.query.clients.findFirst({
         where: eq(clients.id, clientId),
@@ -67,10 +65,13 @@ export const authorizing = async (clientId: string, state: string) => {
         },
     });
 
+    // console.log(client)
+
     if (!client) throw ApiError.notFound("No client exists for this clientId");
 
     const ISSUER = `http://localhost:${process.env.PORT}`;
     const authCodeEndpoint = `${ISSUER}/oauth/auth/code?redirectUrl=${encodeURIComponent(client.redirectURL!)}`;
+    // console.log(authCodeEndpoint)
 
     const html = `<!DOCTYPE html>
 <html lang="en">
@@ -491,7 +492,7 @@ export const authorizing = async (clientId: string, state: string) => {
 
         <div class="social-divider"><span>or</span></div>
 
-        <button type="button" class="btn btn-ghost" onclick="window.location.href='/authorize/deny?state=${state}'">
+        <button type="button" class="btn btn-ghost" onclick="window.location.href='/authorize/deny?'">
           Cancel
         </button>
       </div>
@@ -553,7 +554,7 @@ export const authorizing = async (clientId: string, state: string) => {
     if (!valid) return
 
     // Send request to auth code endpoint
-    console.log('Sending request to:', AUTH_CODE_ENDPOINT);
+    // console.log('Sending request to:', AUTH_CODE_ENDPOINT);x
     fetch(AUTH_CODE_ENDPOINT, {
       method: 'POST',
       headers: {
@@ -572,7 +573,7 @@ export const authorizing = async (clientId: string, state: string) => {
     })
     .then(data => {
       if (data.success) {
-        window.location.href = data.redirectUrl || '/dashboard'
+        window.location.href = data.data.redirectUrl || '/dashboard'
       } else {
         alert(data.message || 'Authentication failed')
       }
@@ -675,9 +676,9 @@ export const getToken = async (
         name: user.name,
         email: user.email,
         email_verified: user.isVerified,
-        iat: Math.floor(Date.now()/1000),
+        iat: Math.floor(Date.now() / 1000),
         iss: process.env.ISSUER!,
-        aud: clientId
+        aud: clientId,
     });
 
     const accessToken =
@@ -689,14 +690,14 @@ export const getToken = async (
 };
 
 export const getPublicKey = async () => {
-  const key = await jose.JWK.asKey(PUBLIC_KEY, "pem")
-  return { keys: [key.toJSON()]};
-}
+    const key = await jose.JWK.asKey(PUBLIC_KEY, "pem");
+    return { keys: [key.toJSON()] };
+};
 
 export const getUserInfo = async (token: string) => {
-  if(! token) throw ApiError.badRequest("IDToken is missing")
-  
-  const decodedToken = verifyIDToken(token);
+    if (!token) throw ApiError.badRequest("IDToken is missing");
 
-  return decodedToken;
-}
+    const decodedToken = verifyIDToken(token);
+
+    return decodedToken;
+};

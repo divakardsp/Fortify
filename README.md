@@ -2,7 +2,7 @@
 
 A complete, production-ready implementation of OpenID Connect (OIDC) and OAuth2 authorization server built with Express.js, TypeScript, and PostgreSQL. Fortify provides secure user authentication, client management, and token generation for third-party integrations.
 
-##  Features
+## Features
 
 - **OAuth2 Authorization Code Flow** - Secure authorization code flow implementation
 - **OpenID Connect (OIDC)** - Complete OIDC specification compliance
@@ -16,7 +16,7 @@ A complete, production-ready implementation of OpenID Connect (OIDC) and OAuth2 
 - **Drizzle ORM** - Type-safe database operations with PostgreSQL
 - **Input Validation** - Joi schema validation for all API inputs
 
-##  Tech Stack
+## Tech Stack
 
 - **Runtime**: Node.js
 - **Language**: TypeScript
@@ -28,7 +28,7 @@ A complete, production-ready implementation of OpenID Connect (OIDC) and OAuth2 
 - **Validation**: Joi
 - **Build**: TypeScript Compiler (tsc)
 
-##  Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -42,8 +42,7 @@ A complete, production-ready implementation of OpenID Connect (OIDC) and OAuth2 
 #### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd OIDC-OAuth2
+git clone https://github.com/divakardsp/Fortify.git
 ```
 
 #### 2. Install Dependencies
@@ -169,9 +168,15 @@ src/
 │   └── express.d.ts            # Express type extensions
 ├── app.ts                       # Express app setup
 └── index.ts                     # Server entry point
+
+public/                          # Frontend static files & SPA
+├── index.html                  # Single-page app with 4 views (auth)
+├── clients.html                # Client management UI
+├── styles.css                  # Responsive styling (user auth)
+└── app.js                       # View switching & API integration
 ```
 
-##  Database Schema
+## Database Schema
 
 ### Users Table
 
@@ -204,18 +209,19 @@ src/
 - updatedAt (Timestamp)
 ```
 
-##  API Endpoints
+## API Endpoints
 
 ### Authentication (`/api/users`)
 
-| Method | Endpoint                      | Description             |
-| ------ | ----------------------------- | ----------------------- |
-| POST   | `/register`                   | Register new user       |
-| POST   | `/verify-email/:token`        | Verify email with token |
-| POST   | `/login`                      | Login user              |
-| POST   | `/logout`                     | Logout (requires auth)  |
-| POST   | `/forgot-password`            | Request password reset  |
-| PUT    | `/reset-password/:resetToken` | Reset password          |
+| Method | Endpoint                      | Description                     |
+| ------ | ----------------------------- | ------------------------------- |
+| POST   | `/register`                   | Register new user               |
+| POST   | `/verify-email/:token`        | Verify email with token         |
+| POST   | `/login`                      | Login user                      |
+| GET    | `/reset-password-page/:token` | Reset password form (HTML page) |
+| POST   | `/logout`                     | Logout (requires auth)          |
+| POST   | `/forgot-password`            | Request password reset          |
+| PUT    | `/reset-password/:resetToken` | Reset password (from form)      |
 
 ### OAuth2/OIDC (`/oauth`)
 
@@ -227,11 +233,16 @@ src/
 | GET    | `/token`                 | Token exchange endpoint |
 | GET    | `/certs`                 | Public key (JWKS)       |
 
-### Client Management (`/api/clients`)
+### Frontend Pages
 
-| Method | Endpoint    | Description            |
-| ------ | ----------- | ---------------------- |
-| POST   | `/register` | Register OAuth2 client |
+The frontend is a **unified single-page application** served at `http://localhost:5473/` with a navigation bar for switching between different sections:
+
+| Tab     | Features                                         |
+| ------- | ------------------------------------------------ |
+| Users   | Login, Register, Forgot Password, Reset Password |
+| Clients | Register OAuth2 Client, Get Public Key           |
+
+
 
 ### OIDC Discovery (`/.well-known/openid-configuration`)
 
@@ -239,7 +250,122 @@ src/
 | ------ | -------- | -------------------- |
 | GET    | `/`      | OpenID Configuration |
 
-##  OAuth2 Flow Example
+## Authentication Module Details
+
+### User Registration & Verification Flow
+
+1. **Register**: `POST /api/users/register`
+    - Validates: name (2-50 chars), email (valid format), password (8+ chars, 1 uppercase, 1 digit)
+    - Returns: User object with email verification required
+
+2. **Verify Email**: `POST /api/users/verify-email/:token`
+    - Token sent via email link
+    - Marks user as verified in database
+
+### Login Flow
+
+1. **Login**: `POST /api/users/login`
+
+    ```json
+    {
+        "email": "user@example.com",
+        "password": "Password123"
+    }
+    ```
+
+    - Validates credentials
+    - Returns: `{ user, accessToken }`
+    - Sets httpOnly refreshToken cookie
+
+### Password Reset Flow
+
+**Step 1**: Request Reset
+
+```bash
+POST /api/users/forgot-password
+{
+  "email": "user@example.com"
+}
+```
+
+- Generates secure reset token
+- Sends email with link: `{BASE_URL}/api/users/reset-password/{resetToken}`
+
+**Step 2**: User clicks email link
+
+```
+GET /api/users/reset-password-page/{resetToken}
+```
+
+- Returns HTML form with embedded token
+- User enters new password
+- Form validates password strength
+
+**Step 3**: Submit Reset
+
+```bash
+PUT /api/users/reset-password/{resetToken}
+{
+  "newPassword": "NewPassword123"
+}
+```
+
+- Validates reset token expiry
+- Updates password in database
+- Redirects to login page
+
+### Using the Frontend
+
+1. Start the server:
+
+```bash
+bun run dev
+```
+
+2. Open browser to `http://localhost:5473`
+
+3. Test the authentication flow:
+    - Register new account
+    - Check email for verification link
+    - Login with credentials
+    - Logout with refresh token rotation
+
+### Password Reset Flow
+
+1. User requests password reset: `http://localhost:5473`
+2. Enters email in "Forgot Password" form
+3. Receives email with reset link:
+    ```
+    http://localhost:5473/api/users/reset-password/{resetToken}
+    ```
+4. Clicks link, sees reset password form
+5. Enters new password (8+ chars, 1 uppercase, 1 digit)
+6. Form submits to: `PUT /api/users/reset-password/{resetToken}`
+7. On success, redirects to login page
+
+## Frontend Interface
+
+### Overview
+
+Fortify features a modern, unified frontend with a responsive navbar for easy navigation:
+
+```
+┌─ Fortify ─────── Users | Clients ──┐
+├────────────────────────────────────┤
+│                                    │
+│   Users Tab:                       │
+│   ├── Login                        │
+│   ├── Register                     │
+│   ├── Forgot Password              │
+│   └── Reset Password (via email)   │
+│                                    │
+│   Clients Tab:                     │
+│   ├── Register OAuth2 Client       │
+│   └── Get Public Key (JWKS)        │
+└────────────────────────────────────┘
+```
+
+## OAuth2 Flow Example
 
 ```
 1. Client redirects user to:
@@ -270,7 +396,7 @@ src/
    }
 ```
 
-##  Available NPM Scripts
+## Available NPM Scripts
 
 ```bash
 npm run start          # Production: Run compiled app
@@ -284,17 +410,17 @@ npm run studio         # Open Drizzle Studio (GUI)
 npm run keys           # Generate RSA key pair for JWT signing
 ```
 
-##  Security Features
+## Security Features
 
-- ✅ RSA-signed JWT tokens
-- ✅ Email verification tokens
-- ✅ Secure refresh token rotation
-- ✅ Authorization code expiration
-- ✅ CORS-ready (can be configured)
-- ✅ Input validation on all endpoints
-- ✅ Unique client secrets per OAuth application
+-  RSA-signed JWT tokens
+-  Email verification tokens
+-  Secure refresh token rotation
+-  Authorization code expiration
+-  CORS-ready (can be configured)
+-  Input validation on all endpoints
+-  Unique client secrets per OAuth application
 
-##  Development Tips
+## Development Tips
 
 ### View Database with Drizzle Studio
 
@@ -318,7 +444,7 @@ Changes to TypeScript files automatically recompile and restart server
 
 The compiled JavaScript is in `dist/` directory. You can inspect it for debugging or deployment.
 
-##  Email Configuration
+## Email Configuration
 
 For password reset and email verification emails to work:
 
@@ -329,19 +455,3 @@ For password reset and email verification emails to work:
     EMAIL_PASSWORD=your-app-password
     ```
 
-##  Example Client Registration
-
-```bash
-curl -X POST http://localhost:5473/api/clients/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "My App",
-    "email": "app@example.com",
-    "websiteURL": "https://myapp.com",
-    "redirectURL": "https://myapp.com/callback"
-  }'
-```
-
-Response includes `clientSecret` - store this securely!
-
-**Built with ❤️ for secure authentication**
