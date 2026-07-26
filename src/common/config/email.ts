@@ -5,6 +5,10 @@ import type { TransportOptions } from "nodemailer";
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT),
+    secure: false,
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
     auth: {
         user: process.env.SMTP_USERNAME,
         pass: process.env.SMTP_PASSWORD,
@@ -82,18 +86,28 @@ const sendVerificationEmail = async (
 </body>
 </html>`;
 
-console.log("Reaching Mail")
+    console.log("Before verify");
+    await transporter.verify();
+    console.log("SMTP verified");
 
-await transporter.sendMail({
-    from: `hello@divakarsinghpurva.me`,
-    to,
-    subject,
-    html
-})
+    console.log("Before sendMail");
+
+    const info = await transporter.sendMail({
+        from: "hello@divakarsinghpurva.me",
+        to,
+        subject,
+        html,
+    });
+
+    console.log("Mail sent", info);
 };
 
-const sendPasswordUpdatedEmail = async (to: string, name: string, subject: string = "Password Updated") => {
-  const html = `<!DOCTYPE html>
+const sendPasswordUpdatedEmail = async (
+    to: string,
+    name: string,
+    subject: string = "Password Updated",
+) => {
+    const html = `<!DOCTYPE html>
 
 <html lang="en">
 <head>
@@ -153,18 +167,23 @@ const sendPasswordUpdatedEmail = async (to: string, name: string, subject: strin
   </table>
 </body>
 </html>
-`
+`;
 
-await transporter.sendMail({
-    from: `hello@divakarsinghpurva.me`,
-    to,
-    subject,
-    html
-})
-}
+    await transporter.sendMail({
+        from: `hello@divakarsinghpurva.me`,
+        to,
+        subject,
+        html,
+    });
+};
 
-const sendResetPasswordEmail = async (to: string, token: string,  name: string, subject: string = "Reset Password") => {
-  const html = `<!DOCTYPE html>
+const sendResetPasswordEmail = async (
+    to: string,
+    token: string,
+    name: string,
+    subject: string = "Reset Password",
+) => {
+    const html = `<!DOCTYPE html>
 
 <html lang="en">
 <head>
@@ -232,13 +251,17 @@ const sendResetPasswordEmail = async (to: string, token: string,  name: string, 
   </table>
 </body>
 </html>
-`
-await transporter.sendMail({
-    from: `hello@divakarsinghpurva.me`,
-    to,
-    subject,
-    html
-})
-}
+`;
+    await transporter.sendMail({
+        from: `hello@divakarsinghpurva.me`,
+        to,
+        subject,
+        html,
+    });
+};
 
-export {sendVerificationEmail, sendPasswordUpdatedEmail, sendResetPasswordEmail}
+export {
+    sendVerificationEmail,
+    sendPasswordUpdatedEmail,
+    sendResetPasswordEmail,
+};
