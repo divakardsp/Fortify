@@ -48,7 +48,7 @@ const sendVerificationEmail = async (
 
               <!-- Button -->
               <div style="text-align:center; margin:30px 0;">
-                <a href="http://localhost:${process.env.PORT}/api/users/verify-email/${token}" 
+                <a href="https://fortify-3.onrender.com/api/users/verify-email/${token}" 
                    style="background:#4f46e5; color:#ffffff; text-decoration:none; padding:14px 24px; border-radius:6px; font-size:16px; display:inline-block;">
                   Verify Email
                 </a>
@@ -59,7 +59,7 @@ const sendVerificationEmail = async (
               </p>
 
               <p style="word-break:break-all; font-size:14px; color:#4f46e5;">
-                http://localhost:${process.env.PORT}/api/users/verify-email/${token}
+                https://fortify-3.onrender.com/api/users/verify-email/${token}
               </p>
 
               <p style="font-size:14px; color:#999; margin-top:30px;">
@@ -195,7 +195,7 @@ const sendResetPasswordEmail = async (to: string, token: string,  name: string, 
 
           <!-- Button -->
           <div style="text-align:center; margin:30px 0;">
-            <a href="http://localhost:5473/api/users/reset-password-page/${token}" 
+            <a href="https://fortify-3.onrender.com:5473/api/users/reset-password-page/${token}" 
                style="background:#ef4444; color:#ffffff; text-decoration:none; padding:14px 24px; border-radius:6px; font-size:16px; display:inline-block;">
               Reset Password
             </a>
@@ -206,7 +206,7 @@ const sendResetPasswordEmail = async (to: string, token: string,  name: string, 
           </p>
 
           <p style="word-break:break-all; font-size:14px; color:#ef4444;">
-            "http://localhost:5473/api/users/reset-password-page/${token}"
+            "https://fortify-3.onrender.com:5473/api/users/reset-password-page/${token}"
           </p>
 
           <p style="font-size:14px; color:#999; margin-top:30px;">

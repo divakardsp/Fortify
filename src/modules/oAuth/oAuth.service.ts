@@ -15,7 +15,7 @@ import { PUBLIC_KEY } from "../../common/utils/certs.js";
 import jose from "node-jose";
 
 export const documentDiscovery = async () => {
-    const ISSUER = `http://localhost:${process.env.PORT}`;
+    const ISSUER = `https://fortify-3.onrender.com`;
     const authorization_endpoint = `${ISSUER}/oauth/auth`;
     const token_endpoint = `${ISSUER}/oauth/token`;
     const userinfo_endpoint = `${ISSUER}/oauth/user-info`;
@@ -69,7 +69,7 @@ export const authorizing = async (clientId: string) => {
 
     if (!client) throw ApiError.notFound("No client exists for this clientId");
 
-    const ISSUER = `http://localhost:${process.env.PORT}`;
+    const ISSUER = `https://fortify-3.onrender.com`;
     const authCodeEndpoint = `${ISSUER}/oauth/auth/code?redirectUrl=${encodeURIComponent(client.redirectURL!)}`;
     // console.log(authCodeEndpoint)
 
