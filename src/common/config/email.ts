@@ -82,6 +82,8 @@ const sendVerificationEmail = async (
 </body>
 </html>`;
 
+console.log("Reaching Mail")
+
 await transporter.sendMail({
     from: `hello@divakarsinghpurva.me`,
     to,
