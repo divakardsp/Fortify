@@ -7,6 +7,7 @@ import { fileURLToPath } from "url";
 import clientRoutes from "./modules/clients/client.routes.js";
 import oAuthRoutes from "./modules/oAuth/oAuth.routes.js";
 import usersRoutes from "./modules/auth/auth.routes.js";
+import errorMiddleware from "./common/middleware/error.middleware.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,5 +29,7 @@ app.use("/oauth", oAuthRoutes);
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "../public/index.html"));
 });
+
+app.use(errorMiddleware);
 
 export default app;

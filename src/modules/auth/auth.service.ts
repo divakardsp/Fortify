@@ -23,14 +23,16 @@ interface UserDataProps {
 }
 
 export const register = async (userData: UserDataProps) => {
+    console.log("Reaching")
     const { name, email, password } = userData;
     const user = await db
         .select()
         .from(users)
         .where(eq(users.email, email))
         .limit(1);
-
+    console.log(user)
     const userExists = user.length === 0 ? false : true;
+    console.log(userExists)
     if (userExists) {
         throw ApiError.conflict("Email already registered");
     }
@@ -40,20 +42,30 @@ export const register = async (userData: UserDataProps) => {
 
     const verificationTokenExpires = new Date(Date.now() + 15 * 60 * 1000);
 
-    const [newUser] = await db
-        .insert(users)
-        .values({
-            name,
-            email,
-            password: hashedPassword,
-            verificationToken: hashedToken,
-            verificationTokenExpires,
-        })
-        .returning({
-            id: users.id,
-            name: users.name,
-            email: users.email,
-        });
+    let newUser;
+
+    try {
+        [newUser] = await db
+            .insert(users)
+            .values({
+                name,
+                email,
+                password: hashedPassword,
+                verificationToken: hashedToken,
+                verificationTokenExpires,
+            })
+            .returning({
+                id: users.id,
+                name: users.name,
+                email: users.email,
+            });
+    } catch (error: any) {
+        if (error?.code === "23505") {
+            throw ApiError.conflict("This email already exists");
+        }
+
+        throw error;
+    }
 
     try {
         await sendVerificationEmail(email, rawToken, name);
@@ -65,6 +77,7 @@ export const register = async (userData: UserDataProps) => {
 };
 
 export const verifyUser = async (token: string) => {
+
     if (!token) throw ApiError.badRequest("Please provide a token.");
 
     const hashedToken = hashingTokens(token);

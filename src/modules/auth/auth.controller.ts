@@ -16,7 +16,7 @@ export const verifyUser = async (req: Request<VerifyParams>, res: Response) => {
     const { token } = req.params;
     const verifyingUser = await authService.verifyUser(token);
 
-    ApiResponse.no_content(res, "User Verified successfully", verifyingUser);
+    ApiResponse.ok(res, "Email verified successfully", verifyingUser);
 };
 
 export const forgotPassword = async (req: Request, res: Response) => {

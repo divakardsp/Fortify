@@ -32,16 +32,26 @@ export const registerClient = async (clientData: ClientDataProp) => {
 
     const { rawToken, hashedToken } = generateRandomTokens();
 
-    const [newClient] = await db
-        .insert(clients)
-        .values({
-            name,
-            email,
-            websiteURL,
-            redirectURL,
-            clientSecret: hashedToken,
-        })
-        .returning();
+    let newClient;
+
+    try {
+        [newClient] = await db
+            .insert(clients)
+            .values({
+                name,
+                email,
+                websiteURL,
+                redirectURL,
+                clientSecret: hashedToken,
+            })
+            .returning();
+    } catch (error: any) {
+        if (error?.code === "23505") {
+            throw ApiError.conflict("This email already exists");
+        }
+
+        throw error;
+    }
 
     return { newClient };
 };

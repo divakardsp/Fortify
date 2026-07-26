@@ -414,6 +414,30 @@ export const authorizing = async (clientId: string) => {
 
     .card-footer a:hover { text-decoration: underline; }
 
+    .message-box {
+      display: none;
+      margin: 0 0 18px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.5;
+      border: 1px solid transparent;
+    }
+
+    .message-box.error {
+      display: block;
+      background: var(--danger-light);
+      color: #b91c1c;
+      border-color: #fecaca;
+    }
+
+    .message-box.success {
+      display: block;
+      background: var(--success-light);
+      color: #166534;
+      border-color: #bbf7d0;
+    }
+
     /* ── Bottom tagline ── */
     .tagline {
       text-align: center;
@@ -465,6 +489,8 @@ export const authorizing = async (clientId: string) => {
 
     <div class="divider"></div>
 
+    <div id="auth-message" class="message-box" style="display: none;"></div>
+
     <!-- Login form -->
     <form onsubmit="handleSubmit(event)">
       <div class="field-group">
@@ -514,6 +540,20 @@ export const authorizing = async (clientId: string) => {
 <script>
   const AUTH_CODE_ENDPOINT = '${authCodeEndpoint}';
 
+  function showMessage(message, type = 'error') {
+    const messageBox = document.getElementById('auth-message')
+    messageBox.textContent = message
+    messageBox.className = \`message-box \${type}\`
+    messageBox.style.display = 'block'
+  }
+
+  function clearMessage() {
+    const messageBox = document.getElementById('auth-message')
+    messageBox.textContent = ''
+    messageBox.style.display = 'none'
+    messageBox.className = 'message-box'
+  }
+
   function togglePw(btn) {
     const input = document.getElementById('password')
     const isHidden = input.type === 'password'
@@ -525,6 +565,7 @@ export const authorizing = async (clientId: string) => {
 
   function handleSubmit(e) {
     e.preventDefault();
+    clearMessage();
     const email = document.getElementById('email')
     const password = document.getElementById('password')
     let valid = true
@@ -573,14 +614,16 @@ export const authorizing = async (clientId: string) => {
     })
     .then(data => {
       if (data.success) {
+        showMessage('Sign in successful. Redirecting...', 'success')
         window.location.href = data.data.redirectUrl || '/dashboard'
       } else {
-        alert(data.message || 'Authentication failed')
+        showMessage(data.message || 'Authentication failed', 'error')
       }
     })
     .catch(error => {
       console.error('Error:', error)
-      alert(error.message || 'An error occurred. Please try again.')
+      const message = error?.message || 'An error occurred. Please try again.'
+      showMessage(message, 'error')
     })
   }
 
