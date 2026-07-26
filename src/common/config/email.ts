@@ -21,6 +21,12 @@ const sendVerificationEmail = async (
     name: string,
     subject: string = "Email Verification",
 ) => {
+    console.log({
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
+        user: process.env.SMTP_USERNAME,
+        passExists: !!process.env.SMTP_PASSWORD,
+    });
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
