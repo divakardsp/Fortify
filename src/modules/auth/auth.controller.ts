@@ -12,12 +12,12 @@ export const register = async (req: Request, res: Response) => {
     ApiResponse.created(res, "User created successfully", user);
 };
 
-export const verifyUser = async (req: Request<VerifyParams>, res: Response) => {
-    const { token } = req.params;
-    const verifyingUser = await authService.verifyUser(token);
+// export const verifyUser = async (req: Request<VerifyParams>, res: Response) => {
+//     const { token } = req.params;
+//     const verifyingUser = await authService.verifyUser(token);
 
-    ApiResponse.ok(res, "Email verified successfully", verifyingUser);
-};
+//     ApiResponse.ok(res, "Email verified successfully", verifyingUser);
+// };
 
 export const forgotPassword = async (req: Request, res: Response) => {
     const { email } = req.body;

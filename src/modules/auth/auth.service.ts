@@ -23,16 +23,16 @@ interface UserDataProps {
 }
 
 export const register = async (userData: UserDataProps) => {
-    console.log("Reaching")
+    console.log("Reaching");
     const { name, email, password } = userData;
     const user = await db
         .select()
         .from(users)
         .where(eq(users.email, email))
         .limit(1);
-    console.log(user)
+    console.log(user);
     const userExists = user.length === 0 ? false : true;
-    console.log(userExists)
+    console.log(userExists);
     if (userExists) {
         throw ApiError.conflict("Email already registered");
     }
@@ -51,8 +51,9 @@ export const register = async (userData: UserDataProps) => {
                 name,
                 email,
                 password: hashedPassword,
-                verificationToken: hashedToken,
-                verificationTokenExpires,
+                isVerified: true,
+                verificationToken: null,
+                verificationTokenExpires: null,
             })
             .returning({
                 id: users.id,
@@ -67,41 +68,40 @@ export const register = async (userData: UserDataProps) => {
         throw error;
     }
 
-    try {
-        await sendVerificationEmail(email, rawToken, name);
-    } catch (error) {
-        console.log(error);
-    }
+    // try {
+    //     await sendVerificationEmail(email, rawToken, name);
+    // } catch (error) {
+    //     console.log(error);
+    // }
 
     return newUser;
 };
 
-export const verifyUser = async (token: string) => {
+// export const verifyUser = async (token: string) => {
+//     if (!token) throw ApiError.badRequest("Please provide a token.");
 
-    if (!token) throw ApiError.badRequest("Please provide a token.");
+//     const hashedToken = hashingTokens(token);
 
-    const hashedToken = hashingTokens(token);
+//     const user = await db.query.users.findFirst({
+//         where: (users, { eq }) => eq(users.verificationToken, hashedToken),
+//     });
 
-    const user = await db.query.users.findFirst({
-        where: (users, { eq }) => eq(users.verificationToken, hashedToken),
-    });
+//     if (!user) throw ApiError.unauthorized("Invalid token");
 
-    if (!user) throw ApiError.unauthorized("Invalid token");
+//     if (new Date(Date.now()) > user.verificationTokenExpires!)
+//         throw ApiError.unauthorized("Token expired");
 
-    if (new Date(Date.now()) > user.verificationTokenExpires!)
-        throw ApiError.unauthorized("Token expired");
+//     await db
+//         .update(users)
+//         .set({
+//             isVerified: true,
+//             verificationToken: null,
+//             verificationTokenExpires: null,
+//         })
+//         .where(eq(users.id, user.id));
 
-    await db
-        .update(users)
-        .set({
-            isVerified: true,
-            verificationToken: null,
-            verificationTokenExpires: null,
-        })
-        .where(eq(users.id, user.id));
-
-    return { isVerified: true };
-};
+//     return { isVerified: true };
+// };
 
 export const forgotPassword = async (email: string) => {
     if (!email) throw ApiError.badRequest("Email is missing");
